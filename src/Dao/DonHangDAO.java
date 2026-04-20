@@ -9,9 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Model.ChiTietDon;
+import Model.ChiTietHoaDonViewModel;
 import Model.DonHang;
+import Model.HoaDonViewModel;
 import Model.KhachHang;
 import until.DBConnection;
+
 
 public class DonHangDAO {
 
@@ -202,6 +205,66 @@ public class DonHangDAO {
                     ctd.setSoLuong(rs.getInt("so_luong"));
                     ctd.setDonGia(rs.getDouble("don_gia"));
                     list.add(ctd);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+    /**
+     * Lấy danh sách hóa đơn kèm tên khách hàng và nhân viên (JOIN 3 bảng).
+     * Dùng cho màn hình Lịch sử hóa đơn.
+     */
+    public List<HoaDonViewModel> layDanhSachHoaDonChiTiet() {
+        List<HoaDonViewModel> list = new ArrayList<>();
+        String sql = "SELECT dh.id, kh.ten_kh, kh.sdt, tk.username AS ten_nv, dh.ngay_tao, dh.tong_tien " +
+                     "FROM DonHang dh " +
+                     "JOIN KhachHang kh ON dh.id_kh = kh.id " +
+                     "JOIN TaiKhoan  tk ON dh.id_nhan_vien = tk.id " +
+                     "ORDER BY dh.ngay_tao DESC";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                list.add(new HoaDonViewModel(
+                        rs.getInt("id"),
+                        rs.getString("ten_kh"),
+                        rs.getString("sdt"),
+                        rs.getString("ten_nv"),
+                        rs.getTimestamp("ngay_tao").toLocalDateTime(),
+                        rs.getDouble("tong_tien")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    /**
+     * Lấy chi tiết các sản phẩm trong một đơn hàng (JOIN ChiTietDon + SanPham).
+     */
+    public List<ChiTietHoaDonViewModel> layChiTietHoaDon(int idDon) {
+        List<ChiTietHoaDonViewModel> list = new ArrayList<>();
+        String sql = "SELECT sp.ten_sp, ctd.so_luong, ctd.don_gia " +
+                     "FROM ChiTietDon ctd " +
+                     "JOIN SanPham sp ON ctd.id_sp = sp.id " +
+                     "WHERE ctd.id_don = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, idDon);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(new ChiTietHoaDonViewModel(
+                            rs.getString("ten_sp"),
+                            rs.getInt("so_luong"),
+                            rs.getDouble("don_gia")
+                    ));
                 }
             }
         } catch (SQLException e) {
