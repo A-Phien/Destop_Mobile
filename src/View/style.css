@@ -1,0 +1,128 @@
+/* Cấu hình nền cho toàn bộ ứng dụng */
+.main-bg {
+    -fx-background-image: url("/assets/background.jpg");
+    -fx-background-size: cover;
+    -fx-background-position: center center;
+    -fx-background-repeat: no-repeat;
+}
+
+/* Tạo một lớp phủ mờ để các ô nhập liệu nổi bật trên nền ảnh */
+.glass-pane {
+    -fx-background-color: rgba(255, 255, 255, 0.85); /* Trắng mờ 85% */
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 0);
+}
+
+/* ===== CÁC NÚT BẤM ===== */
+
+/* Nút cam - Thêm vào giỏ */
+.button-orange {
+    -fx-background-color: #e67e22;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.button-orange:hover {
+    -fx-background-color: #d35400;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 8, 0, 0, 2);
+}
+
+/* Nút đỏ - Xoá */
+.button-red {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.button-red:hover {
+    -fx-background-color: #c0392b;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 8, 0, 0, 2);
+}
+
+/* Nút xanh lá - Xuất hóa đơn */
+.button-green {
+    -fx-background-color: #27ae60;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.button-green:hover {
+    -fx-background-color: #1e8449;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 8, 0, 0, 2);
+}
+
+/* Nút hiện đại chung */
+.button-modern {
+    -fx-background-radius: 20;
+    -fx-cursor: hand;
+}
+
+.button-modern:hover {
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0);
+}
+
+/* ===== TEXTFIELD CHỈ ĐỌC ===== */
+.text-field-readonly {
+    -fx-background-color: #f0f0f0;
+    -fx-text-fill: #555555;
+    -fx-border-color: #cccccc;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+/* ===== TABLE VIEW ===== */
+.table-view {
+    -fx-background-color: transparent;
+    -fx-background-radius: 10;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #2c3e50;
+    -fx-background-radius: 10 10 0 0;
+}
+
+.table-view .column-header-background .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.table-view .table-row-cell:selected {
+    -fx-background-color: #d5e8f5;
+    -fx-text-fill: #2c3e50;
+}
+
+/* ===== MÀN HÌNH ĐĂNG NHẬP ===== */
+
+/* Card đăng nhập — nền tối mờ kiểu glassmorphism */
+.login-card {
+    -fx-background-color: rgba(20, 25, 40, 0.82);
+    -fx-background-radius: 20;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 30, 0, 0, 8);
+}
+
+/* TextField trong màn hình đăng nhập */
+.login-field {
+    -fx-background-color: rgba(255, 255, 255, 0.10);
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #7f8c8d;
+    -fx-border-color: rgba(255,255,255,0.25);
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 10 14;
+    -fx-font-size: 13;
+}
+
+.login-field:focused {
+    -fx-border-color: #e67e22;
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+    -fx-effect: dropshadow(three-pass-box, rgba(230,126,34,0.4), 8, 0, 0, 0);
+}
+

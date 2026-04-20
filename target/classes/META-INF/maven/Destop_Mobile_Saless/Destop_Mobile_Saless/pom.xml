@@ -1,0 +1,83 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>Destop_Mobile_Saless</groupId>
+  <artifactId>Destop_Mobile_Saless</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+
+  <!-- Định nghĩa biến môi trường -->
+  <properties>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+    <!-- Khuyên dùng JavaFX 17 vì nó ổn định hơn bản 11 rất nhiều -->
+    <javafx.version>17.0.6</javafx.version> 
+  </properties>
+
+  <!-- BẮT BUỘC PHẢI CÓ THẺ NÀY ĐỂ BỌC CÁC DEPENDENCY -->
+  <dependencies>
+    
+    <!-- 1. Bộ giáp JavaFX -->
+    <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-controls</artifactId>
+        <version>${javafx.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-fxml</artifactId>
+        <version>${javafx.version}</version>
+    </dependency>
+
+    <!-- 2. Mũi giáo MySQL (Bắt buộc để kết nối Database) -->
+    <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <version>8.0.33</version>
+    </dependency>
+
+    <!-- 3. Khinh công mây ngàn Cloudinary (Để upload ảnh) -->
+    <dependency>
+        <groupId>com.cloudinary</groupId>
+        <artifactId>cloudinary-http44</artifactId>
+        <version>1.33.0</version>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <sourceDirectory>src</sourceDirectory>
+
+    <!-- Copy các file FXML, CSS, ảnh vào classpath khi build -->
+    <resources>
+      <resource>
+        <directory>src</directory>
+        <excludes>
+          <exclude>**/*.java</exclude>
+        </excludes>
+      </resource>
+      <resource>
+        <directory>assets</directory>
+        <targetPath>assets</targetPath>
+      </resource>
+    </resources>
+
+    <plugins>
+        <!-- Trình biên dịch Maven -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.11.0</version>
+        </plugin>
+        <!-- Plugin giúp chạy app JavaFX bằng lệnh 'mvn javafx:run' -->
+        <plugin>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-maven-plugin</artifactId>
+            <version>0.0.8</version>
+            <configuration>
+                <!-- CHÚ Ý: Đổi dòng này thành đường dẫn trỏ tới class Main của ngươi -->
+                <mainClass>application.Main</mainClass> 
+            </configuration>
+        </plugin>
+    </plugins>
+  </build>
+
+</project>

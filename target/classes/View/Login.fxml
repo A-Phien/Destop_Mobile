@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="520.0" prefWidth="860.0"
+            xmlns="http://javafx.com/javafx/25"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controll.LoginController">
+
+    <stylesheets>
+        <URL value="@style.css" />
+    </stylesheets>
+
+    <!-- Nền toàn màn hình với ảnh background -->
+    <VBox alignment="CENTER" styleClass="main-bg"
+          AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+          AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+        <children>
+
+            <!-- Thẻ đăng nhập nằm giữa -->
+            <VBox alignment="CENTER_LEFT" maxWidth="420.0" spacing="16.0" styleClass="login-card">
+                <padding>
+                    <Insets top="45.0" bottom="45.0" left="45.0" right="45.0" />
+                </padding>
+                <children>
+
+                    <!-- Icon + Tên app -->
+                    <Label text="📱" style="-fx-font-size: 42;">
+                        <VBox.margin><Insets bottom="4.0" /></VBox.margin>
+                    </Label>
+                    <Label text="QUẢN LÝ CỬA HÀNG" textFill="WHITE">
+                        <font><Font name="System Bold" size="20.0" /></font>
+                    </Label>
+                    <Label text="ĐIỆN THOẠI" textFill="#e67e22">
+                        <font><Font name="System Bold" size="30.0" /></font>
+                    </Label>
+                    <Label text="Đăng nhập để tiếp tục" textFill="#bdc3c7">
+                        <font><Font size="13.0" /></font>
+                        <VBox.margin><Insets bottom="8.0" /></VBox.margin>
+                    </Label>
+
+                    <!-- Thông báo lỗi -->
+                    <Label fx:id="lblError" text="" textFill="#e74c3c" wrapText="true" maxWidth="330.0">
+                        <font><Font size="12.0" /></font>
+                    </Label>
+
+                    <!-- Tên đăng nhập -->
+                    <VBox spacing="6.0">
+                        <Label text="Tên đăng nhập" textFill="#ecf0f1">
+                            <font><Font size="12.0" /></font>
+                        </Label>
+                        <TextField fx:id="txtUsername" promptText="Nhập tên đăng nhập..." styleClass="login-field" />
+                    </VBox>
+
+                    <!-- Mật khẩu -->
+                    <VBox spacing="6.0">
+                        <Label text="Mật khẩu" textFill="#ecf0f1">
+                            <font><Font size="12.0" /></font>
+                        </Label>
+                        <PasswordField fx:id="txtPassword" promptText="Nhập mật khẩu..." styleClass="login-field" />
+                    </VBox>
+
+                    <!-- Nút đăng nhập -->
+                    <Button fx:id="btnDangNhap" maxWidth="1.7976931348623157E308"
+                            onAction="#handleDangNhap"
+                            prefHeight="46.0"
+                            styleClass="button-orange"
+                            text="ĐĂNG NHẬP">
+                        <font><Font name="System Bold" size="14.0" /></font>
+                        <VBox.margin><Insets top="10.0" /></VBox.margin>
+                    </Button>
+
+                    <!-- Gợi ý tài khoản mặc định -->
+                    <HBox alignment="CENTER">
+                        <Label text="Tài khoản mặc định: admin / 123456" textFill="#7f8c8d">
+                            <font><Font size="11.0" /></font>
+                        </Label>
+                    </HBox>
+
+                </children>
+            </VBox>
+
+        </children>
+    </VBox>
+
+</AnchorPane>

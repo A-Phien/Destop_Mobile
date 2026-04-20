@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/25"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controll.QuanLySanPhamController">
+    <children>
+        <HBox spacing="15.0"
+              AnchorPane.topAnchor="12.0" AnchorPane.bottomAnchor="12.0"
+              AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0">
+            <children>
+
+                <!-- ===== BÊN TRÁI: BẢNG SẢN PHẨM ===== -->
+                <VBox spacing="10.0" HBox.hgrow="ALWAYS">
+                    <children>
+                        <!-- Tiêu đề -->
+                        <Label text="DANH SÁCH SẢN PHẨM" textFill="#157ee7">
+                            <font><Font name="System Bold" size="17.0" /></font>
+                        </Label>
+
+                        <!-- Thanh tìm kiếm -->
+                        <TextField fx:id="txtTimKiem" promptText="🔍  Tìm theo tên, hãng..." />
+
+                        <!-- Bảng -->
+                        <TableView fx:id="tableSanPham" styleClass="glass-pane" VBox.vgrow="ALWAYS">
+                            <columns>
+                                <TableColumn fx:id="colId"       prefWidth="55.0"  text="ID"       />
+                                <TableColumn fx:id="colTenSP"    prefWidth="220.0" text="Tên SP"    />
+                                <TableColumn fx:id="colHang"     prefWidth="110.0" text="Hãng"      />
+                                <TableColumn fx:id="colGia"      prefWidth="140.0" text="Giá bán"   />
+                                <TableColumn fx:id="colSoLuong"  prefWidth="85.0"  text="Tồn kho"   />
+                            </columns>
+                        </TableView>
+
+                        <!-- Nút hành động bảng -->
+                        <HBox spacing="10.0">
+                            <children>
+                                <Button maxWidth="1.7976931348623157E308" onAction="#handleThemMoi"
+                                        prefHeight="38.0" styleClass="button-green"
+                                        text="➕  THÊM MỚI" HBox.hgrow="ALWAYS">
+                                    <font><Font name="System Bold" size="13.0" /></font>
+                                </Button>
+                                <Button maxWidth="1.7976931348623157E308" onAction="#handleXoa"
+                                        prefHeight="38.0" styleClass="button-red"
+                                        text="🗑  XÓA" HBox.hgrow="ALWAYS">
+                                    <font><Font name="System Bold" size="13.0" /></font>
+                                </Button>
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+
+                <!-- ===== BÊN PHẢI: FORM NHẬP LIỆU ===== -->
+                <VBox prefWidth="340.0" spacing="10.0" styleClass="glass-pane">
+                    <padding><Insets top="18.0" bottom="18.0" left="18.0" right="18.0" /></padding>
+                    <children>
+
+                        <!-- Tiêu đề form (thay đổi theo chế độ) -->
+                        <Label fx:id="lblTieuDe" text="➕  THÊM SẢN PHẨM MỚI" textFill="#e67e22">
+                            <font><Font name="System Bold" size="16.0" /></font>
+                        </Label>
+
+                        <!-- Ảnh preview -->
+                        <VBox alignment="CENTER" prefHeight="160.0"
+                              style="-fx-background-color: #f5f5f5; -fx-background-radius: 10; -fx-border-color: #ddd; -fx-border-radius: 10;">
+                            <children>
+                                <ImageView fx:id="imgPreview" fitHeight="150.0" fitWidth="200.0"
+                                           preserveRatio="true" pickOnBounds="true" />
+                            </children>
+                        </VBox>
+
+                        <!-- Nút chọn ảnh -->
+                        <Button maxWidth="1.7976931348623157E308" onAction="#handleChonAnh"
+                                prefHeight="36.0" styleClass="button-modern"
+                                style="-fx-background-color: #8e44ad; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand;"
+                                text="📷  CHỌN ẢNH &amp; UPLOAD CLOUDINARY">
+                            <font><Font size="12.0" /></font>
+                        </Button>
+
+                        <!-- URL ảnh (readonly) -->
+                        <TextField fx:id="txtUrlAnh" promptText="URL ảnh (tự động điền sau upload)"
+                                   styleClass="text-field-readonly" editable="false" />
+
+                        <!-- Tên sản phẩm -->
+                        <Label text="Tên sản phẩm *" style="-fx-font-weight: bold;" />
+                        <TextField fx:id="txtTenSP" promptText="VD: iPhone 15 Pro Max" />
+
+                        <!-- Hãng sản xuất -->
+                        <Label text="Hãng sản xuất *" style="-fx-font-weight: bold;" />
+                        <TextField fx:id="txtHangSX" promptText="VD: Apple, Samsung, Xiaomi..." />
+
+                        <!-- Giá bán -->
+                        <Label text="Giá bán (VND) *" style="-fx-font-weight: bold;" />
+                        <TextField fx:id="txtGiaBan" promptText="VD: 29990000" />
+
+                        <!-- Số lượng -->
+                        <Label text="Số lượng tồn kho *" style="-fx-font-weight: bold;" />
+                        <TextField fx:id="txtSoLuong" promptText="VD: 10" />
+
+                        <!-- Nút lưu -->
+                        <Button fx:id="btnLuu" maxWidth="1.7976931348623157E308" onAction="#handleLuu"
+                                prefHeight="44.0" styleClass="button-orange" text="💾  LƯU">
+                            <font><Font name="System Bold" size="14.0" /></font>
+                            <VBox.margin><Insets top="6.0" /></VBox.margin>
+                        </Button>
+
+                    </children>
+                </VBox>
+
+            </children>
+        </HBox>
+    </children>
+</AnchorPane>
