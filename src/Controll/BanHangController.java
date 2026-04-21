@@ -83,6 +83,7 @@ public class BanHangController {
     // ===== PHÂN QUYỀN =====
     @FXML private javafx.scene.control.TabPane mainTabPane;
     @FXML private javafx.scene.control.Tab     tabKho;
+    @FXML private javafx.scene.control.Tab     tabTaiKhoan;
 
     // ===== DỮ LIỆU =====
     private final SanPhamDAO sanPhamDAO = new SanPhamDAO();
@@ -106,9 +107,9 @@ public class BanHangController {
         cauHinhTimKiem();
         tableGioHang.setItems(gioHang);
         capNhatTongTien();
-        // Ẩn tab Quản lý kho nếu không phải ADMIN
+        // Ẩn các tab ADMIN-only nếu user là STAFF
         if (!UserSession.getInstance().laAdmin()) {
-            mainTabPane.getTabs().remove(tabKho);
+            mainTabPane.getTabs().removeAll(tabKho, tabTaiKhoan);
         }
     }
 
