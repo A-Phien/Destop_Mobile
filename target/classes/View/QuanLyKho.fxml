@@ -17,7 +17,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="750.0" prefWidth="1100.0" styleClass="main-bg" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controll.BanHangController">
+<BorderPane prefHeight="750.0" prefWidth="1100.0" styleClass="main-bg" xmlns="http://javafx.com/javafx/25"
+ xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controll.BanHangController">
    
    <stylesheets>
       <URL value="@style.css" />
@@ -155,10 +156,20 @@
               <fx:include source="LichSuHoaDon.fxml" />
             </content>
           </Tab>
-          <!-- Tab chỉ dành cho ADMIN, sẽ bị ẩn nếu là STAFF -->
+          <Tab fx:id="tabKhachHang" text="👥  Khách hàng">
+            <content>
+              <fx:include source="QuanLyKhachHang.fxml" />
+            </content>
+          </Tab>
+          <!-- Các tab chỉ dành cho ADMIN, sẽ bị ẩn nếu là STAFF -->
           <Tab fx:id="tabKho" text="📦  Quản lý kho">
             <content>
               <fx:include source="QuanLySanPham.fxml" />
+            </content>
+          </Tab>
+          <Tab fx:id="tabTaiKhoan" text="🔑  Tài khoản NV">
+            <content>
+              <fx:include source="QuanLyTaiKhoan.fxml" />
             </content>
           </Tab>
         </tabs>

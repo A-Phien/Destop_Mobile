@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/25"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controll.QuanLyTaiKhoanController">
+    <children>
+        <HBox spacing="15.0"
+              AnchorPane.topAnchor="12.0" AnchorPane.bottomAnchor="12.0"
+              AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0">
+            <children>
+
+                <!-- BÊN TRÁI: BẢNG -->
+                <VBox spacing="10.0" HBox.hgrow="ALWAYS">
+                    <children>
+                        <Label text="QUẢN LÝ TÀI KHOẢN NHÂN VIÊN" textFill="#157ee7">
+                            <font><Font name="System Bold" size="17.0" /></font>
+                        </Label>
+
+                        <!-- Ghi chú màu -->
+                        <HBox spacing="8.0" alignment="CENTER_LEFT">
+                            <Label text="●" textFill="#e67e22" style="-fx-font-size: 16;" />
+                            <Label text="= Tài khoản ADMIN" style="-fx-font-size: 12;" />
+                        </HBox>
+
+                        <TableView fx:id="tableTK" styleClass="glass-pane" VBox.vgrow="ALWAYS">
+                            <columns>
+                                <TableColumn fx:id="colId"       prefWidth="60.0"  text="ID"       />
+                                <TableColumn fx:id="colUsername"  prefWidth="200.0" text="Username" />
+                                <TableColumn fx:id="colVaiTro"   prefWidth="120.0" text="Vai trò"  />
+                            </columns>
+                            <placeholder><Label text="Chưa có tài khoản nào." /></placeholder>
+                        </TableView>
+
+                        <HBox spacing="10.0">
+                            <children>
+                                <Button maxWidth="1.7976931348623157E308" onAction="#handleThemMoi"
+                                        prefHeight="38.0" styleClass="button-green"
+                                        text="➕  THÊM MỚI" HBox.hgrow="ALWAYS">
+                                    <font><Font name="System Bold" size="13.0" /></font>
+                                </Button>
+                                <Button maxWidth="1.7976931348623157E308" onAction="#handleXoa"
+                                        prefHeight="38.0" styleClass="button-red"
+                                        text="🗑  XÓA" HBox.hgrow="ALWAYS">
+                                    <font><Font name="System Bold" size="13.0" /></font>
+                                </Button>
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+
+                <!-- BÊN PHẢI: FORM -->
+                <VBox prefWidth="320.0" spacing="12.0" styleClass="glass-pane">
+                    <padding><Insets top="20.0" bottom="20.0" left="20.0" right="20.0" /></padding>
+                    <children>
+                        <Label fx:id="lblTieuDe" text="➕  TẠO TÀI KHOẢN MỚI" textFill="#e67e22">
+                            <font><Font name="System Bold" size="16.0" /></font>
+                        </Label>
+
+                        <Label text="Username *" style="-fx-font-weight: bold;" />
+                        <TextField fx:id="txtUsername" promptText="VD: nhanvien01" />
+
+                        <Label text="Mật khẩu *" style="-fx-font-weight: bold;" />
+                        <PasswordField fx:id="txtPassword" promptText="Nhập mật khẩu..." />
+                        <Label text="(Khi sửa: để trống = giữ nguyên mật khẩu cũ)"
+                               textFill="#7f8c8d" style="-fx-font-size: 11;" />
+
+                        <Label text="Vai trò *" style="-fx-font-weight: bold;" />
+                        <ComboBox fx:id="cbVaiTro" maxWidth="1.7976931348623157E308" />
+
+                        <Button maxWidth="1.7976931348623157E308" onAction="#handleLuu"
+                                prefHeight="44.0" styleClass="button-orange" text="💾  LƯU">
+                            <font><Font name="System Bold" size="14.0" /></font>
+                            <VBox.margin><Insets top="10.0" /></VBox.margin>
+                        </Button>
+                    </children>
+                </VBox>
+
+            </children>
+        </HBox>
+    </children>
+</AnchorPane>
