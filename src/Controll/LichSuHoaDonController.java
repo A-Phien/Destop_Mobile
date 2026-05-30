@@ -1,6 +1,7 @@
 package Controll;
 
 import java.text.NumberFormat;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
 
@@ -10,6 +11,8 @@ import Model.HoaDonViewModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -21,6 +24,8 @@ public class LichSuHoaDonController {
 
     // ===== BẢNG DANH SÁCH ĐƠN HÀNG =====
     @FXML private TextField txtTimKiem;
+    @FXML private DatePicker dpTuNgay;
+    @FXML private DatePicker dpDenNgay;
     @FXML private TableView<HoaDonViewModel>          tableDonHang;
     @FXML private TableColumn<HoaDonViewModel, Integer> colIdDon;
     @FXML private TableColumn<HoaDonViewModel, String>  colNgay;
@@ -124,7 +129,62 @@ public class LichSuHoaDonController {
 
     @FXML
     private void handleLamMoi() {
+        dpTuNgay.setValue(null);
+        dpDenNgay.setValue(null);
         taiDuLieu();
         txtTimKiem.clear();
+    }
+
+    @FXML
+    private void handleLocNgay() {
+        LocalDate tuNgay = dpTuNgay.getValue();
+        LocalDate denNgay = dpDenNgay.getValue();
+
+        if (tuNgay == null || denNgay == null) {
+            alert("Thieu ngay", "Vui long chon ca tu ngay va den ngay.");
+            return;
+        }
+
+        if (tuNgay.isAfter(denNgay)) {
+            alert("Khoang ngay khong hop le", "Tu ngay khong duoc lon hon den ngay.");
+            return;
+        }
+
+        taiDuLieuTheoNgay(tuNgay, denNgay);
+        txtTimKiem.clear();
+    }
+
+    @FXML
+    private void handleHomNay() {
+        LocalDate today = LocalDate.now();
+        dpTuNgay.setValue(today);
+        dpDenNgay.setValue(today);
+        taiDuLieuTheoNgay(today, today);
+        txtTimKiem.clear();
+    }
+
+    @FXML
+    private void handleThangNay() {
+        LocalDate today = LocalDate.now();
+        LocalDate firstDay = today.withDayOfMonth(1);
+        dpTuNgay.setValue(firstDay);
+        dpDenNgay.setValue(today);
+        taiDuLieuTheoNgay(firstDay, today);
+        txtTimKiem.clear();
+    }
+
+    private void taiDuLieuTheoNgay(LocalDate tuNgay, LocalDate denNgay) {
+        danhSach = FXCollections.observableArrayList(dao.layDanhSachHoaDonTheoNgay(tuNgay, denNgay));
+        tableDonHang.setItems(danhSach);
+        lblTieuDeChiTiet.setText("Chon mot don hang de xem chi tiet");
+        tableChiTiet.setItems(FXCollections.emptyObservableList());
+    }
+
+    private void alert(String title, String msg) {
+        Alert a = new Alert(Alert.AlertType.WARNING);
+        a.setTitle(title);
+        a.setHeaderText(null);
+        a.setContentText(msg);
+        a.showAndWait();
     }
 }

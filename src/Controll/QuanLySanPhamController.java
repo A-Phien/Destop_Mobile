@@ -13,9 +13,11 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -23,11 +25,14 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import until.CloudinaryUploader;
+import until.EnvConfig;
 
 public class QuanLySanPhamController {
 
     // ===== BẢNG =====
     @FXML private TextField txtTimKiem;
+    @FXML private CheckBox chkTonThap;
+    @FXML private Label lblCanhBaoTonKho;
     @FXML private TableView<SanPham>          tableSanPham;
     @FXML private TableColumn<SanPham, Integer> colId;
     @FXML private TableColumn<SanPham, String>  colTenSP;
@@ -49,6 +54,7 @@ public class QuanLySanPhamController {
     private ObservableList<SanPham> danhSach = FXCollections.observableArrayList();
     private SanPham spDangChon = null; // null = chế độ thêm mới
     private final NumberFormat fmt = NumberFormat.getInstance(new Locale("vi", "VN"));
+    private final int nguongTonThap = layNguongTonThap();
 
     @FXML
     public void initialize() {
@@ -59,6 +65,7 @@ public class QuanLySanPhamController {
                 .addListener((obs, cu, moi) -> { if (moi != null) dienVaoForm(moi); });
         // Tìm kiếm real-time
         txtTimKiem.textProperty().addListener((obs, cu, moi) -> locBang(moi));
+        chkTonThap.selectedProperty().addListener((obs, cu, moi) -> locBang(txtTimKiem.getText()));
         datTrangThaiThemMoi();
     }
 
@@ -74,18 +81,38 @@ public class QuanLySanPhamController {
                 setText(e || v == null ? null : fmt.format(v) + " ₫");
             }
         });
+
+        tableSanPham.setRowFactory(tv -> new TableRow<>() {
+            @Override protected void updateItem(SanPham sp, boolean empty) {
+                super.updateItem(sp, empty);
+                if (empty || sp == null) {
+                    setStyle("");
+                } else if (laTonThap(sp)) {
+                    setStyle("-fx-background-color: rgba(231,76,60,0.18);");
+                } else {
+                    setStyle("");
+                }
+            }
+        });
     }
 
     private void taiDuLieu() {
         danhSach = FXCollections.observableArrayList(dao.layDanhSachSanPham());
-        tableSanPham.setItems(danhSach);
+        capNhatCanhBaoTonKho();
+        locBang(txtTimKiem == null ? "" : txtTimKiem.getText());
     }
 
     private void locBang(String tuKhoa) {
-        if (tuKhoa == null || tuKhoa.isBlank()) { tableSanPham.setItems(danhSach); return; }
-        String kw = tuKhoa.toLowerCase().trim();
-        tableSanPham.setItems(danhSach.filtered(sp ->
-                sp.getTenSp().toLowerCase().contains(kw) || sp.getHangSx().toLowerCase().contains(kw)));
+        String kw = tuKhoa == null ? "" : tuKhoa.toLowerCase().trim();
+        boolean chiTonThap = chkTonThap != null && chkTonThap.isSelected();
+
+        tableSanPham.setItems(danhSach.filtered(sp -> {
+            boolean khopTuKhoa = kw.isBlank()
+                    || sp.getTenSp().toLowerCase().contains(kw)
+                    || sp.getHangSx().toLowerCase().contains(kw);
+            boolean khopTon = !chiTonThap || laTonThap(sp);
+            return khopTuKhoa && khopTon;
+        }));
     }
 
     private void dienVaoForm(SanPham sp) {
@@ -206,5 +233,28 @@ public class QuanLySanPhamController {
 
     private void showAlert(Alert.AlertType type, String title, String msg) {
         Alert a = new Alert(type); a.setTitle(title); a.setHeaderText(null); a.setContentText(msg); a.showAndWait();
+    }
+
+    private boolean laTonThap(SanPham sp) {
+        return sp.getSoLuong() <= nguongTonThap;
+    }
+
+    private void capNhatCanhBaoTonKho() {
+        if (lblCanhBaoTonKho == null) {
+            return;
+        }
+
+        long soSanPhamTonThap = danhSach.stream().filter(this::laTonThap).count();
+        lblCanhBaoTonKho.setText(soSanPhamTonThap == 0
+                ? "Khong co san pham ton thap"
+                : soSanPhamTonThap + " san pham ton <= " + nguongTonThap);
+    }
+
+    private int layNguongTonThap() {
+        try {
+            return Math.max(0, Integer.parseInt(EnvConfig.getOrDefault("LOW_STOCK_THRESHOLD", "5")));
+        } catch (NumberFormatException e) {
+            return 5;
+        }
     }
 }

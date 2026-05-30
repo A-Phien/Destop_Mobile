@@ -9,26 +9,38 @@ import java.util.List;
 
 import Model.TaiKhoan;
 import until.DBConnection;
+import until.PasswordUtil;
 
 public class TaiKhoanDAO {
 
     // ===== CHIÊU THỨ 1: Đăng nhập - Kiểm tra username + password =====
     public TaiKhoan dangNhap(String username, String password) {
-        String sql = "SELECT * FROM TaiKhoan WHERE username = ? AND password = ?";
+        String sql = "SELECT * FROM TaiKhoan WHERE username = ?";
 
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+            PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, username);
-            ps.setString(2, password);
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
+                    String storedPassword = rs.getString("password");
+                    if (!PasswordUtil.matches(password, storedPassword)) {
+                        return null;
+                    }
+
                     TaiKhoan tk = new TaiKhoan();
                     tk.setId(rs.getInt("id"));
                     tk.setUsername(rs.getString("username"));
-                    tk.setPassword(rs.getString("password"));
+                    tk.setPassword(storedPassword);
                     tk.setVaiTro(rs.getString("vai_tro"));
+
+                    if (PasswordUtil.needsRehash(storedPassword)) {
+                        String hashedPassword = PasswordUtil.hash(password);
+                        capNhatMatKhau(tk.getId(), hashedPassword);
+                        tk.setPassword(hashedPassword);
+                    }
+
                     return tk;
                 }
             }
@@ -70,7 +82,7 @@ public class TaiKhoanDAO {
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, tk.getUsername());
-            ps.setString(2, tk.getPassword());
+            ps.setString(2, PasswordUtil.hashIfNeeded(tk.getPassword()));
             ps.setString(3, tk.getVaiTro());
 
             return ps.executeUpdate() > 0;
@@ -89,7 +101,7 @@ public class TaiKhoanDAO {
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, tk.getUsername());
-            ps.setString(2, tk.getPassword());
+            ps.setString(2, PasswordUtil.hashIfNeeded(tk.getPassword()));
             ps.setString(3, tk.getVaiTro());
             ps.setInt(4, tk.getId());
 
@@ -132,5 +144,55 @@ public class TaiKhoanDAO {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public boolean kiemTraUsernameExistsForOther(String username, int currentId) {
+        String sql = "SELECT COUNT(*) FROM TaiKhoan WHERE username = ? AND id <> ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, username);
+            ps.setInt(2, currentId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public int demAdmin() {
+        String sql = "SELECT COUNT(*) FROM TaiKhoan WHERE UPPER(vai_tro) = 'ADMIN'";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    private boolean capNhatMatKhau(int id, String hashedPassword) {
+        String sql = "UPDATE TaiKhoan SET password = ? WHERE id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, hashedPassword);
+            ps.setInt(2, id);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
