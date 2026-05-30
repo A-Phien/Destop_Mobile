@@ -75,7 +75,7 @@ public class QuanLyTaiKhoanController {
     private void handleLuu() {
         String username = txtUsername.getText().trim();
         String password = txtPassword.getText();
-        String vaiTro   = cbVaiTro.getSelectionModel().getSelectedItem();
+        String vaiTro   = chuanHoaVaiTro(cbVaiTro.getSelectionModel().getSelectedItem());
 
         if (username.isEmpty()) {
             alert(Alert.AlertType.WARNING, "Thiếu thông tin", "Username không được để trống!");
@@ -98,6 +98,16 @@ public class QuanLyTaiKhoanController {
             if (ok) alert(Alert.AlertType.INFORMATION, "Thành công", "Đã tạo tài khoản mới: " + username);
         } else {
             // CẬP NHẬT — nếu bỏ trống password thì giữ nguyên
+            if (dao.kiemTraUsernameExistsForOther(username, tkDangChon.getId())) {
+                alert(Alert.AlertType.WARNING, "Trung username", "Username \"" + username + "\" da ton tai!");
+                return;
+            }
+            if ("ADMIN".equalsIgnoreCase(tkDangChon.getVaiTro())
+                    && !"ADMIN".equalsIgnoreCase(vaiTro)
+                    && dao.demAdmin() <= 1) {
+                alert(Alert.AlertType.WARNING, "Khong the doi quyen", "Phai giu lai it nhat 1 tai khoan ADMIN!");
+                return;
+            }
             String passCuoi = password.isEmpty() ? tkDangChon.getPassword() : password;
             // Không cho đổi username chính mình nếu trùng với người khác
             tkDangChon.setUsername(username);
@@ -122,6 +132,11 @@ public class QuanLyTaiKhoanController {
             return;
         }
 
+        if ("ADMIN".equalsIgnoreCase(tk.getVaiTro()) && dao.demAdmin() <= 1) {
+            alert(Alert.AlertType.WARNING, "Khong the xoa", "Phai giu lai it nhat 1 tai khoan ADMIN!");
+            return;
+        }
+
         Alert cf = new Alert(Alert.AlertType.CONFIRMATION,
                 "Xóa tài khoản \"" + tk.getUsername() + "\"?", ButtonType.OK, ButtonType.CANCEL);
         cf.setHeaderText(null);
@@ -143,6 +158,10 @@ public class QuanLyTaiKhoanController {
         txtPassword.setPromptText("Nhập mật khẩu...");
         cbVaiTro.getSelectionModel().select("STAFF");
         tableTK.getSelectionModel().clearSelection();
+    }
+
+    private String chuanHoaVaiTro(String vaiTro) {
+        return "ADMIN".equalsIgnoreCase(vaiTro) ? "ADMIN" : "STAFF";
     }
 
     private void alert(Alert.AlertType t, String title, String msg) {
