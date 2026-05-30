@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TableColumn?>
@@ -37,6 +38,24 @@
                 </HBox>
 
                 <!-- ===== SPLIT PANE: bảng đơn hàng / chi tiết ===== -->
+                <HBox alignment="CENTER_LEFT" spacing="8.0">
+                    <children>
+                        <Label text="Tu ngay" />
+                        <DatePicker fx:id="dpTuNgay" prefWidth="140.0" />
+                        <Label text="Den ngay" />
+                        <DatePicker fx:id="dpDenNgay" prefWidth="140.0" />
+                        <Button onAction="#handleLocNgay" prefHeight="32.0"
+                                style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 7; -fx-cursor: hand; -fx-font-weight: bold;"
+                                text="Loc" />
+                        <Button onAction="#handleHomNay" prefHeight="32.0"
+                                style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-background-radius: 7; -fx-cursor: hand; -fx-font-weight: bold;"
+                                text="Hom nay" />
+                        <Button onAction="#handleThangNay" prefHeight="32.0"
+                                style="-fx-background-color: #8e44ad; -fx-text-fill: white; -fx-background-radius: 7; -fx-cursor: hand; -fx-font-weight: bold;"
+                                text="Thang nay" />
+                    </children>
+                </HBox>
+
                 <SplitPane dividerPositions="0.55" orientation="VERTICAL" VBox.vgrow="ALWAYS">
                     <items>
 
