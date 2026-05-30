@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import until.UserSession;
+import until.EnvConfig;
 import Dao.DonHangDAO;
 import Dao.SanPhamDAO;
 import Model.ChiTietDon;
@@ -26,12 +27,17 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 public class BanHangController {
 
@@ -93,6 +99,7 @@ public class BanHangController {
 
     // Formatter tiền Việt Nam: 29.990.000
     private final NumberFormat tienVND = NumberFormat.getInstance(new Locale("vi", "VN"));
+    private final int nguongTonThap = layNguongTonThap();
 
     // =====================================================================
     // KHỞI TẠO
@@ -104,6 +111,7 @@ public class BanHangController {
         taiDanhSachSanPham();
         cauHinhComboBoxHang();
         cauHinhLangNgheChonSanPham();
+        cauHinhLangNgheChonGioHang();
         cauHinhTimKiem();
         tableGioHang.setItems(gioHang);
         capNhatTongTien();
@@ -129,6 +137,20 @@ public class BanHangController {
             protected void updateItem(Double item, boolean empty) {
                 super.updateItem(item, empty);
                 setText(empty || item == null ? null : tienVND.format(item) + " ₫");
+            }
+        });
+
+        tableSanPham.setRowFactory(tv -> new TableRow<>() {
+            @Override
+            protected void updateItem(SanPham sp, boolean empty) {
+                super.updateItem(sp, empty);
+                if (empty || sp == null) {
+                    setStyle("");
+                } else if (sp.getSoLuong() <= nguongTonThap) {
+                    setStyle("-fx-background-color: rgba(231,76,60,0.18);");
+                } else {
+                    setStyle("");
+                }
             }
         });
     }
@@ -189,8 +211,28 @@ public class BanHangController {
     private void cauHinhLangNgheChonSanPham() {
         // Khi click chọn 1 sản phẩm → hiển thị chi tiết bên phải
         tableSanPham.getSelectionModel().selectedItemProperty().addListener((obs, cu, moi) -> {
-            if (moi != null)
+            if (moi != null) {
                 hienThiChiTietSanPham(moi);
+                // Bỏ chọn ở bảng giỏ hàng để tránh hiển thị song song hai lựa chọn
+                tableGioHang.getSelectionModel().clearSelection();
+            }
+        });
+    }
+
+    private void cauHinhLangNgheChonGioHang() {
+        // Khi click chọn 1 sản phẩm ở giỏ hàng → hiển thị chi tiết bên phải
+        tableGioHang.getSelectionModel().selectedItemProperty().addListener((obs, cu, moi) -> {
+            if (moi != null) {
+                for (SanPham sp : danhSachSanPham) {
+                    if (sp.getId() == moi.getIdSp()) {
+                        hienThiChiTietSanPham(sp);
+                        txtSoLuongMua.setText(String.valueOf(moi.getSoLuong()));
+                        // Bỏ chọn ở bảng sản phẩm để tránh hiển thị song song hai lựa chọn
+                        tableSanPham.getSelectionModel().clearSelection();
+                        break;
+                    }
+                }
+            }
         });
     }
 
@@ -258,6 +300,7 @@ public class BanHangController {
                 item.setSoLuong(slTong);
                 tableGioHang.refresh();
                 capNhatTongTien();
+                xoaTrangChiTiet();
                 return;
             }
         }
@@ -269,6 +312,16 @@ public class BanHangController {
         }
         gioHang.add(new ChiTietGioHang(spChon.getId(), spChon.getTenSp(), soLuongMua, spChon.getGiaBan()));
         capNhatTongTien();
+        xoaTrangChiTiet();
+    }
+
+    private void xoaTrangChiTiet() {
+        txtMaSP.clear();
+        txtTenSP.clear();
+        txtDonGia.clear();
+        txtSoLuongMua.setText("1");
+        imgPreview.setImage(null);
+        tableSanPham.getSelectionModel().clearSelection();
     }
 
     @FXML
@@ -384,5 +437,43 @@ public class BanHangController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private int layNguongTonThap() {
+        try {
+            return Math.max(0, Integer.parseInt(EnvConfig.getOrDefault("LOW_STOCK_THRESHOLD", "5")));
+        } catch (NumberFormatException e) {
+            return 5;
+        }
+    }
+
+    @FXML
+    private void handleDangXuat() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Bạn có chắc chắn muốn đăng xuất?", ButtonType.OK, ButtonType.CANCEL);
+        alert.setTitle("Xác nhận đăng xuất");
+        alert.setHeaderText(null);
+        alert.showAndWait().ifPresent(btn -> {
+            if (btn == ButtonType.OK) {
+                try {
+                    // Đăng xuất session
+                    UserSession.getInstance().dangXuat();
+
+                    // Load lại màn hình đăng nhập
+                    Parent root = FXMLLoader.load(getClass().getResource("/View/Login.fxml"));
+                    Stage stage = (Stage) mainTabPane.getScene().getWindow();
+
+                    Scene scene = new Scene(root);
+                    stage.setTitle("Đăng Nhập — Quản Lý Cửa Hàng Điện Thoại");
+                    stage.setScene(scene);
+                    stage.setWidth(1024);
+                    stage.setHeight(768);
+                    stage.setResizable(false);
+                    stage.centerOnScreen();
+                } catch (Exception e) {
+                    hienCanhBao("Lỗi hệ thống", "Không thể quay lại màn hình đăng nhập.");
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 }
