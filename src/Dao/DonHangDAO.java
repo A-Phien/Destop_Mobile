@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -237,6 +239,39 @@ public class DonHangDAO {
                         rs.getTimestamp("ngay_tao").toLocalDateTime(),
                         rs.getDouble("tong_tien")
                 ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public List<HoaDonViewModel> layDanhSachHoaDonTheoNgay(LocalDate tuNgay, LocalDate denNgay) {
+        List<HoaDonViewModel> list = new ArrayList<>();
+        String sql = "SELECT dh.id, kh.ten_kh, kh.sdt, tk.username AS ten_nv, dh.ngay_tao, dh.tong_tien " +
+                     "FROM DonHang dh " +
+                     "JOIN KhachHang kh ON dh.id_kh = kh.id " +
+                     "JOIN TaiKhoan  tk ON dh.id_nhan_vien = tk.id " +
+                     "WHERE dh.ngay_tao >= ? AND dh.ngay_tao < ? " +
+                     "ORDER BY dh.ngay_tao DESC";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setTimestamp(1, Timestamp.valueOf(tuNgay.atStartOfDay()));
+            ps.setTimestamp(2, Timestamp.valueOf(denNgay.plusDays(1).atStartOfDay()));
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(new HoaDonViewModel(
+                            rs.getInt("id"),
+                            rs.getString("ten_kh"),
+                            rs.getString("sdt"),
+                            rs.getString("ten_nv"),
+                            rs.getTimestamp("ngay_tao").toLocalDateTime(),
+                            rs.getDouble("tong_tien")
+                    ));
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
