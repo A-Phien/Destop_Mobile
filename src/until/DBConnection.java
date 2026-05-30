@@ -5,27 +5,26 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DBConnection {
-    // Sửa lại Cổng, Username và Password cho đúng với MySQL trên máy của ngươi!
-    // Mặc định XAMPP thì user là 'root', password để trống "".
-    // Còn nếu xài MySQL Workbench thì password thường là '123456' hoặc do ngươi tự đặt.
-    private static final String URL = "jdbc:mysql://localhost:3306/quan_ly_dien_thoai";
-    private static final String USER = "root"; 
-    private static final String PASS = ""; // ĐIỀN MẬT KHẨU CỦA NGƯƠI VÀO ĐÂY!
+    private static final String DEFAULT_URL = "jdbc:mysql://localhost:3306/quan_ly_dien_thoai";
+    private static final String DEFAULT_USER = "root";
+    private static final String DEFAULT_PASS = "";
+
+    private static final String URL = EnvConfig.getOrDefault("DB_URL", DEFAULT_URL);
+    private static final String USER = EnvConfig.getOrDefault("DB_USER", DEFAULT_USER);
+    private static final String PASS = EnvConfig.getOrDefault("DB_PASSWORD", DEFAULT_PASS);
 
     public static Connection getConnection() {
-        Connection conn = null;
         try {
-            // Không cần Class.forName() với các bản MySQL Connector mới (từ 8.0 trở lên)
-            conn = DriverManager.getConnection(URL, USER, PASS);
-            System.out.println(">> [Hệ thống] Kết nối Đan Điền (MySQL) thành công!");
+            Connection conn = DriverManager.getConnection(URL, USER, PASS);
+            System.out.println(">> [System] Connected to MySQL successfully.");
+            return conn;
         } catch (SQLException e) {
-            System.err.println(">> [Cảnh báo] Tẩu hỏa nhập ma! Không thể kết nối cơ sở dữ liệu!");
+            System.err.println(">> [Warning] Cannot connect to database.");
             e.printStackTrace();
+            return null;
         }
-        return conn;
     }
-    
-    // Hàm dùng để test nhanh xem cầu nối có sập không
+
     public static void main(String[] args) {
         getConnection();
     }
